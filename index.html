@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+<title>Otus Programming Language</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8"/>
+<meta name="description" content="Documentation and useful information about the Gremlin systems programming language. The Gremlin language aims to be low level and "simple but powerful""/>
+<meta name="author" content="Simon Doksrød"/><meta name="robots" content="index,follow"><link rel="stylesheet" type="text/css" href="style.css">
+<script src="generated_script.js"></script>
+</head>
+
+<body>
+<div id="page_container">
+<div id="header">
+<a href="#about"><img src="images/otus.svg" id="logo"/></a>
+<ul id="navbar">
+<li><a href="#about"><b>About</b></a></li><li class="navbar_vl">|</li>
+<li><a href="#docs"><b>Docs</b></a></li><li class="navbar_vl">|</li>
+<li><a href="#log"><b>Dev Log</b></a></li><li class="navbar_vl">|</li>
+<li><a href="https://github.com/Soimn/Gremlin"><b>GitHub</b></a></li>
+</ul>
+</div>
+
+<div id="content">
+
+<div id="about_tab">
+<h1>The Otus programming language</h1> The Otus programming language aims to be a <i>"simple, but powerful"</i> alternative to C, and takes heavy inspiration from languages such as <a href="https://odin-lang.org/">Odin</a> and <a href="https://www.youtube.com/playlist?list=PLmV5I2fxaiCKfxMBrNsU1kgKJXD3PkyxO">Jai</a>. The current goal of the language is to be: <ul> <li><b>Clear and concise</b>, to remove unnecessary complexity</li> <li><b>Powerful</b>, to ease the development of large and complex software</li> <li><b>Lightweight</b>, to allow greater expressiveness without a loss of performance</li> </ul> <h2>Example Code</h2> 
+<div class="code">
+main :: <span class="code_keyword">proc</span>
+{
+    print("Hello World");
+}
+</div>
+ </div>
+
+<div id="docs_tab">
+</div>
+
+<div id="log_tab">
+<div class="log_title t200610"><a href="#log@t200610">Title</a></div><div class="log_date t200610">2020/06/10</div>
+<div class="log_content_minimized t200610">
+This is the content. It may contain text, <i>formatted text</i> and 
+<div class="code">
+main :: <span class="code_keyword">proc</span>
+{
+    i : <span class="code_keyword">int</span>   = 0;
+    j : <span class="code_keyword">float</span> = 0;
+
+    <span class="code_keyword">if</span> (i == (<span class="code_keyword">int</span>)j) print("HMMMM");
+    <span class="code_keyword">else</span> print("NAAHH");
+}
+</div>
+ Newlines, and any extraneous spaces, are ignored in the middle of normal text. Use <br> force a newline, <span class="whitespace">    </span> to force a tab and <span class="whitespace"> </span> to force a space</div>
+</div>
+</div>
+</div>
+</body>
+</html>
