@@ -93,6 +93,8 @@ function SwitchTab()
         SetLogState(maximized_log, false);
         maximized_log = null;
     }
+
+    window.scrollTo(0, 0);
 }
 
 document.addEventListener("readystatechange", event => {
@@ -100,7 +102,7 @@ document.addEventListener("readystatechange", event => {
 	{
         if (navigator.userAgent.match(/(iphone)|(ipad)/i))
         {
-            var view = document.querySelector("meta[name="viewport"]");
+            var view = document.querySelector("meta[name=\"viewport\"]");
 
             if (view)
             {
