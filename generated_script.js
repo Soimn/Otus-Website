@@ -98,6 +98,17 @@ function SwitchTab()
 document.addEventListener("readystatechange", event => {
 	if (event.target.readyState === "complete")
 	{
+        if (navigator.userAgent.match(/(iphone)|(ipad)/i))
+        {
+            var view = document.querySelector("meta[name="viewport"]");
+
+            if (view)
+            {
+                view.content = "width=device-width, minimum-scale=1.0, maximum-scale=1.0, initial-scale=1.0";
+                window.addEventListener("gesturestart", function() {});
+            }
+        }
+
 		SwitchTab();
 	}
 });
