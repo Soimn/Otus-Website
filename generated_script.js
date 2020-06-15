@@ -62,6 +62,39 @@ function SwitchTab()
 		about.style.display = "none";
 		docs.style.display  = "none";
 		log.style.display   = "block";
+	
+		if (current_tab.startsWith("#log@"))
+		{
+			var log_id = current_tab.slice("#log@".length);
+
+			if (DevLogIDs.find(x => x === log_id) === undefined)
+			{
+				window.location.hash = "#log";
+
+				if (maximized_log != null)
+				{
+					SetLogState(maximized_log, false);
+					maximized_log = null;
+				}
+			}
+
+			else
+			{
+				if (maximized_log != null)
+				{
+					SetLogState(maximized_log, false);
+				}
+
+				maximized_log = log_id;
+				SetLogState(log_id, true);
+			}
+		}
+
+		else
+		{
+			SetLogState(maximized_log, false);
+			maximized_log = null;
+		}
 	}
 
 	else
@@ -70,40 +103,6 @@ function SwitchTab()
 		about.style.display  = "block";
 		docs.style.display   = "none";
 		log.style.display    = "none";
-	}
-
-	if (current_tab.startsWith("#log@"))
-	{
-		var log_id = current_tab.slice("#log@".length);
-
-		if (DevLogIDs.find(x => x === log_id) === undefined)
-		{
-			window.location.hash = "#log";
-
-			if (maximized_log != null)
-			{
-				SetLogState(maximized_log, false);
-				maximized_log = null;
-			}
-		}
-
-		else
-		{
-			if (maximized_log != null)
-			{
-				SetLogState(maximized_log, false);
-			}
-
-			maximized_log = log_id;
-			SetLogState(log_id, true);
-		}
-	}
-
-	else if (maximized_log != null)
-	{
-		window.location.hash = "#log";
-		SetLogState(maximized_log, false);
-		maximized_log = null;
 	}
 
 	if (current_tab.startsWith("#log"))
@@ -119,6 +118,12 @@ function SwitchTab()
 			for (title of document.getElementsByClassName("log_title_minimized")) title.style.display = "block";
 			for (date  of document.getElementsByClassName("log_date_minimized"))  date.style.display  = "block";
 		}
+	}
+
+	else if (maximized_log != null)
+	{
+		SetLogState(maximized_log, false);
+		maximized_log = null;
 	}
 
 	window.scrollTo(0, 0);
