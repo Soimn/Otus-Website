@@ -8,10 +8,12 @@ body
 	display: inline-block;
 	width: 90%;
 	max-width: 900px;
+	min-width: 307px;
 	height: auto;
 	font-family: sans-serif, Arial;
 	font-size: 1.05em;
 	text-align: left;
+	line-height: 1.5;
 }
 
 #header
@@ -70,18 +72,17 @@ body
 
 .code
 {
-	width: 90%;
+	width: 98%;
 	background-color: #161616;
 	display: block;
 	white-space: pre-wrap;
-	font-family: Consolas;
+	font-family: Consolas, arial;
 	text-align: left;
 	color: #A08563;
 	margin-top: 1.05em;
 	margin-bottom: 1.05em;
-	padding-left: 5%;
-	padding-right: 5%;
 	padding-bottom: 1.05em;
+	padding-left: 1.05em;
 }
 
 .code_keyword
@@ -89,20 +90,25 @@ body
 	color: #CD950C;
 }
 
-.whitespace
+.log_title_minimized
 {
-	white-space: pre;
-}
-
-.log_title
-{
+	cursor: pointer;
 	border: 0;
 	border-top: 0.05em;
 	border-color: #222;
 	border-style: solid;
 }
 
-.log_title a
+.log_title_maximized
+{
+	cursor: pointer;
+	border: 0;
+	border-top: 0.05em;
+	border-color: #222;
+	border-style: solid;
+}
+
+.log_title_minimized a
 {
 	font-size: 2.5em;
 	text-decoration: none;
@@ -110,12 +116,29 @@ body
 	color: #000;
 }
 
-.log_date
+.log_title_maximized a
+{
+	font-size: 2.5em;
+	text-decoration: none;
+	text-decoration: bold;
+	color: #000;
+}
+
+.log_date_minimized
 {
 	color: #222;
 }
 
-.log_content_minimized { display: none; }
+.log_date_maximized
+{
+	color: #222;
+}
+
+.log_content_minimized
+{
+	display: none;
+	margin-top: 1.0em;
+}
 
 .log_content_maximized
 {
