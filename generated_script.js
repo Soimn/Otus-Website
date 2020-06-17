@@ -9,7 +9,7 @@ function SetLogState(log_id, should_maximize)
 	var log_objects = document.getElementsByClassName(log_id)
 	if (log_objects === undefined || log_objects.length === 0)
 	{
-		console.log("The dev log (id: {0}) is missing the title, date and content objects", log_id);
+		console.log("The dev log (id: " + log_id + ") is missing the title, date and content objects");
 	}
 
 	else
@@ -36,7 +36,7 @@ function SetLogState(log_id, should_maximize)
 
 			else
 			{
-				console.log("The dev log (id: {0}) is missing the log_* class", log_id);
+				console.log("The dev log (id: " + log_id + ") is missing the log_* class");
 			}
 		}
 	}
