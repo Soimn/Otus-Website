@@ -1,4 +1,4 @@
-var DevLogIDs = ["maed200614"];
+var DevLogIDs = ["id200617", "maed200614"];
 
 var maximized_log = null;
 
