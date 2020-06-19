@@ -1,4 +1,4 @@
-var DevLogIDs = ["id200617", "maed200614"];
+var DevLogIDs = ["id200617", "maed200614", "tios200619"];
 
 var maximized_log = null;
 
@@ -63,8 +63,12 @@ function SwitchTab()
 		docs.style.display  = "none";
 		log.style.display   = "block";
 	
+		var log_intro = document.getElementById("log_intro");
+
 		if (current_tab.startsWith("#log@"))
 		{
+			log_intro.style.display = "none";
+
 			var log_id = current_tab.slice("#log@".length);
 
 			if (DevLogIDs.find(x => x === log_id) === undefined)
@@ -92,6 +96,8 @@ function SwitchTab()
 
 		else
 		{
+			log_intro.style.display = "block";
+
 			SetLogState(maximized_log, false);
 			maximized_log = null;
 		}
@@ -154,6 +160,9 @@ document.addEventListener("readystatechange", event => {
 
 			return (a_date > b_date ? -1 : (b_date > a_date ? 1 : 0));
 		});
+
+		// "log_intro" always ends up last, since it does not have a date. Add it first so it goes on top
+		log_tab.appendChild(log_entries.pop());
 
 		for (entry of log_entries) log_tab.appendChild(entry);
 

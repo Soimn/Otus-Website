@@ -70,6 +70,12 @@ body
 #docs_tab  { display: none; }
 #log_tab   { display: none; }
 
+#log_intro
+{
+	display: block;
+	margin-bottom: 1.05em;
+}
+
 .code
 {
 	width: 98%;
@@ -85,10 +91,8 @@ body
 	padding-left: 1.05em;
 }
 
-.code_keyword
-{
-	color: #CD950C;
-}
+.code_keyword { color: #CD950C; }
+.code_comment { color: #7D7D7D; }
 
 .log_title_minimized
 {
