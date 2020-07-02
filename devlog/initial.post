@@ -1,0 +1,73 @@
+14/06/20
+Motivation and Early Development
+
+Hi. I am Simon. A sometimes humble game and engine developer living in Norway, who apparently decided to stack mountains on top of each other to reach Mt. Olympus.
+The mountains being code and Olympus being an actual working compiler. Before recapping half a year of development, a bit of background.
+\n
+\n
+Around Christmas time last year, I grew a bit frustrated with C and C++. At the time I was working on my Nth iteration of a game engine, using a small
+subset of C++, and wanted to rewrite my MIN/MAX macros as proper functions to allow for type checking. Little did I know that the frustration of there being _no_
+implementation of MIN/MAX in C or C++ that I would be satisfied with. I tried out different versions of templated functions, which I despised, and eventually went on to
+scour for compiler specific C extensions. While searching I continuously chanted that "there must surely be a proper way to implement MIN/MAX functions in C". Eventually
+I stumbled upon "generic selection macros" in C. Compile time selection of expressions based on type seemed to be the solution I was looking for. However, there was
+still a slight problem with the approach. Apparently MSVC does not properly support any new (new being post 90's) features of the C language, making generic selection
+a no go.
+\n
+\n
+What I wanted from C, or C++, was the ability to write, or generate, a maximum of _three_ functions (int, uint, float) and have the result cast to the correct common type.
+Now, this may seem like a negligible problem. Surely generating a small number of functions, or even using a C like naming scheme, would not harm the resulting program
+significantly. It was not this small scale issue I was troubled with, but rather the fact that the language prevented me from expressing what I wanted to do, without
+a lot of cruft. All the problems I had with C and C++, most of them being with C++, accumulated to critical mass right around the time I started watching
+<a href="https://www.youtube.com/playlist?list=PLmV5I2fxaiCKfxMBrNsU1kgKJXD3PkyxO">Jonathan Blow's</a> videos on his new language Jai. Jai seemed like a godsend at the time.
+I fondly remember working on the rendering API for my game engine while watching one of his compiler streams. When working on the rendering API I found myself wanting a way
+of "unpacking" structs. This would allow for standardizing common elements in structs, without needing to access the members via an intermediary variable. I was about to
+suggest this "struct unpacking" idea, when I realised that a superior version was already implemented in Jai (the using statement). It seemed however that Jai would
+release way off in the future, and I could not wait that long, so I decided to make my own language.
+\n
+\n
+The language started as an extension to C with added metaprogramming and altered casting rules. The syntax was similar to C, with some added quirks due to type inference,
+multiple return values and improved templates, and functioned almost exactly like C. This introduced some problems, as I had at that time never written a parser (or any 
+other part of a compiler), and the many quirks of C syntax, including my own additions, seemed like too much. I therefore decided to alter the syntax a bit, changing it to
+look more like Jai. Along the way I also came up with some (I would say "interesting") ideas, and the syntax ended up being a hot mess. After several renditions due to
+aesthetics, holisticity and semantics, I arrived at a syntax similar to Jai, but different in a few subtle ways. 
+\n
+\n
+I planned on using this language up until Jai released
+and then switch, but as the project grew I felt like I had arrived at a crossroads. One option would be to make a throwaway language and continue on engine development,
+another would be to pause the development of my existing projects and develop a proper language. This dilemma lead to a lot of frustration and hopelessness as I did not
+see myself being able to finish both the engine and the language in any reasonable time frame. However I did not like the idea of making a compiler for a throwaway
+language either. After working on a parser for the language I also found myself a bit repelled by the complexity of it. By extension I also found myself displeased with the
+complexity of Jai, as my language was supposed to be a simpler version of it (so that I could manage the development of it). At the same time I was watching a lot of language
+design talks, and stumbled upon <a href="https://odin-lang.org/">Odin</a>. Odin seemed to have taken a similar route to my language, simplifying Jai. However, I still found
+Odin to be a little too complex, and after developing the parser in C, I found that I really did not need much to program effectively. I therefore decided to throw everything
+I did not deem as necessary out the window, and strive to make the language as simple as possible. However simplifying the language too much could, strangely enough, lead to
+more complexity, as evident with machine language. I therefore adjusted my aim towards "simple but powerful", by reducing the moving parts of the language to a few
+powerful constructs that could be used directly or to build new abstractions.
+\n
+\n
+Lately I have been redesigning the language's syntax and semantics, as I found that a lot of the "unique" concepts I had introduced were not useful enough to outweigh the
+added complexity. One of those concepts was "infix function calling". This was a purely syntactical alternative to calling functions, allowing for operator-like functions
+with no semantic difference from a regular call.
+```
+// Normal function call
+Inner(a, b);
+
+// Infix call
+a 'Inner' b;
+
+// Prefix call
+Length' a;
+
+// Postfix call
+a 'Length;
+```
+
+This seemed like a good idea, since the language does not have operator overloading. It proved however to only be useful in very specific circumstances 
+(like vector operations), that could often be solved by a more useful construct. I have also been sketching out the specifics of metaprogramming in the language,
+and have learned, by a lot of trial and error, that an integral feature of the language, such as metaprogramming, should _not_ be retrofitted to an existing language,
+but rather built in tandem with it.
+\n
+\n
+And that is most of the early development of this language summarized, with most of the frustration, cuss words, stupidity and details removed for ease of reading. The language
+is still far from finished, especially since I decided to scrap months of work, but it seems like this project is feasible, and would possibly prove to be useful to at least
+one person.

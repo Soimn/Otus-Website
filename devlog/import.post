@@ -1,0 +1,71 @@
+17/06/20
+Import Declarations
+
+Header files and dealing with cyclic imports has never really bothered me (except when I first learned C++ without knowing why header files existed in the first place).
+I was therefore quite puzzled when Jonathan Blow presented header files, along with C++'s arrow operator, as major issues with C++ in his video 
+<a href="https://youtu.be/TH9VCN6UkyQ">about a better programming language for games</a>. At that time, I saw the benefit of removing header files, but also, in my opinion,
+a huge drawback. Include directives in C declare a dependency, but also serve as a guide as where to look for the implementation of anything in a given file. The 
+implementation could of course be hidden behind N nested imports (N being a significantly large number), but you at least know that for any given identifier, that is
+not part of the C language, you will always find the implementation further up the file, or in one of the imported header files. This promise is important for understanding
+foreign code and is broken by the use of multiple compilation units (non-unity build), and the removal of the requirement for every file to import it's dependencies. Now, 
+I'm not saying there is a problem with Jai because it does not have any header files (as it seems to only remove the forward declarations, not import dependencies), but it
+got me thinking.
+\n
+\n
+Import declarations should, in my opinion, declare a dependency on a file and allow access to all global declarations of that file in the current file's global scope. There is
+however a problem with this. If the import declaration imports everything in the target file, it will inevitably be impossible to hide the implementation of something
+behind anything larger than a procedure, or struct. This is a problem, since a lot things in programming benefit from "helper functions" that should only be visible to the
+to the intended users. Helper functions that are globally visible could lead to bugs due to use outside the intended scope of the function, and in the 
+<a href="http://number-none.com/blow/blog/programming/2014/09/26/carmack-on-inlined-code.html">words of John Carmack</a>: 
+*"Most bugs are a result of the execution state not being exactly what you think it is"*. Importing files should therefore be somewhat selective. Jai solves this by adding
+the concept of a file- and export scope. Every declaration in a file is local to that file (in file scope), unless it is exported. This seemed like a good idea, along with
+the use of compiler directives to indicate whether a block of code is exported or not. The only issue I have with Jai's import behaviour is that an import declaration seems
+to affect other imported files as well (similar to how textual imports sometimes break the "dependency promise" of each imported file). A problem with enforcing this
+"dependency promise" is that it adds a lot of redundant import declarations to common files and unnecessary visual clutter. However this could be solved by allowing the
+programmer to specify a group of files that should be implicitly imported in all source files.
+\n
+\n
+Then there is the question of how to deal with libraries. Ginger Bill's <a href="https://odin-lang.org/">Odin</a> has in this case been an example of how I personally
+think libraries should not be handled. This might be due to the fact that I don't use libraries since I despise having code in my codebase that I have not written,
+or fully understood myself. However, I think the way Odin requires every file to specify a parent package is damaging to the project. This is due to two issues I have with
+the approach:
+<ul>
+	<li>being _mandatory_ in every file, it introduces additional unnecessary visual clutter</li>
+        <li>it might encourage enforcing stricter barriers, than optimal, between functionality in a codebase</li>
+</ul>
+The first issue is a trivial one, but the second is, in my opinion, a great flaw with the language. Now, I'm not saying code should be an entangled spaghetti mess, but I am
+definitely advocating that overly modularizing code is akin to trying to build a fortress from breadcrumbs. It is not necessarily bad to separate part of a code base in
+different files, or even libraries, but it is truly damaging to the code base when those barriers become a part of the high level description and mental image. Packages in
+Odin seem to only be used in distribution and import of several files as one. Allowing the programmer to import both files and directories, would in my opinion achieve a
+similar result, without the need for the concept of a package. Odin does however do a few things I like, namely "library collections", and import namespacing. In Odin you
+are able to prefix an import path with a label which declares which "library collection" that file is a part of. Adapting this to work with the file system instead could yield 
+a sort of prefix path label, where the label is a sort of "shorthand" for an absolute path. This is useful since it explicitly declares where the compiler should look for a file without needing to specify the full path, instead of using a list of search paths in C. Import namespacing is also a step in the more explicit direction, as giving each 
+imported declaration a mandatory prefix could both fix name collisions and increase readability.
+\n
+\n
+Import declarations in Otus will therefore be able to import single files or every source file in a directory. A prefix "name:" label could be added to change the search
+path from relative to absolute, with the path bound to the label being prepended to the import path. An alias, or namespace, can also be specified, which hides the imported
+declarations behind a "alias." barrier. Every file needs to import what it uses, except for what is chosen to be globally imported.
+\n
+\n
+EDIT:\n
+After much thought it seems like I was too narrow minded when writing this, as it seems like the rules I made are more fit for libraries than files. 
+\n
+\n
+I have made a habit of separating parts of a program into several files based on the general functionality provided by that part of the program. These files are not, and should
+not be treated as, encapsulated pools of code, but rather a focused view of the main file. I therefore elected to embrace this and design the import system around it. Stealing
+the nomenclature from Jai and Odin, I have split importing into three separate concepts: package importing, file loading and foreign library importing.
+\n
+\n
+The import system described in this article/log has been renamed to package importing, but still functions exactly
+the same, except for the imported declaration always being in a different namespace from the importer. Packages are normal source files 
+with the addition of a package declaration ("package NAME") on the top of the file and every non-overridden link name being prepended with the package name
+\n
+\n
+File loading on the other hand is an "entirely new" concept which basically amounts to textual 
+importing in C. Loading works exactly the same as importing, except that the link names are not 
+changed and the namespaces of the two files are merged, instead of being kept separate
+\n
+\n
+Foreign library importing is just a mechanism to allow for static linking with C libraries, and allows the programmer to use
+identifiers instead of strings to refer to libraries when writing procedure "prototypes".
