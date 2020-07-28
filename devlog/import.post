@@ -3,7 +3,7 @@ Import Declarations
 
 Header files and dealing with cyclic imports has never really bothered me (except when I first learned C++ without knowing why header files existed in the first place).
 I was therefore quite puzzled when Jonathan Blow presented header files, along with C++'s arrow operator, as major issues with C++ in his video 
-<a href="https://youtu.be/TH9VCN6UkyQ">about a better programming language for games</a>. At that time, I saw the benefit of removing header files, but also, in my opinion,
+<a href="https://youtu.be/TH9VCN6UkyQ">about a better programming language for games<a>. At that time, I saw the benefit of removing header files, but also, in my opinion,
 a huge drawback. Include directives in C declare a dependency, but also serve as a guide as where to look for the implementation of anything in a given file. The 
 implementation could of course be hidden behind N nested imports (N being a significantly large number), but you at least know that for any given identifier, that is
 not part of the C language, you will always find the implementation further up the file, or in one of the imported header files. This promise is important for understanding
@@ -25,7 +25,7 @@ to affect other imported files as well (similar to how textual imports sometimes
 programmer to specify a group of files that should be implicitly imported in all source files.
 \n
 \n
-Then there is the question of how to deal with libraries. Ginger Bill's <a href="https://odin-lang.org/">Odin</a> has in this case been an example of how I personally
+Then there is the question of how to deal with libraries. Ginger Bill's !(odin, Odin) has in this case been an example of how I personally
 think libraries should not be handled. This might be due to the fact that I don't use libraries since I despise having code in my codebase that I have not written,
 or fully understood myself. However, I think the way Odin requires every file to specify a parent package is damaging to the project. This is due to two issues I have with
 the approach:

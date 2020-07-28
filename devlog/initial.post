@@ -18,7 +18,7 @@ What I wanted from C, or C++, was the ability to write, or generate, a maximum o
 Now, this may seem like a negligible problem. Surely generating a small number of functions, or even using a C like naming scheme, would not harm the resulting program
 significantly. It was not this small scale issue I was troubled with, but rather the fact that the language prevented me from expressing what I wanted to do, without
 a lot of cruft. All the problems I had with C and C++, most of them being with C++, accumulated to critical mass right around the time I started watching
-<a href="https://www.youtube.com/playlist?list=PLmV5I2fxaiCKfxMBrNsU1kgKJXD3PkyxO">Jonathan Blow's</a> videos on his new language Jai. Jai seemed like a godsend at the time.
+!(jai_vids, Jonathan Blow's) videos on his new language Jai. Jai seemed like a godsend at the time.
 I fondly remember working on the rendering API for my game engine while watching one of his compiler streams. When working on the rendering API I found myself wanting a way
 of "unpacking" structs. This would allow for standardizing common elements in structs, without needing to access the members via an intermediary variable. I was about to
 suggest this "struct unpacking" idea, when I realised that a superior version was already implemented in Jai (the using statement). It seemed however that Jai would
@@ -38,7 +38,7 @@ another would be to pause the development of my existing projects and develop a 
 see myself being able to finish both the engine and the language in any reasonable time frame. However I did not like the idea of making a compiler for a throwaway
 language either. After working on a parser for the language I also found myself a bit repelled by the complexity of it. By extension I also found myself displeased with the
 complexity of Jai, as my language was supposed to be a simpler version of it (so that I could manage the development of it). At the same time I was watching a lot of language
-design talks, and stumbled upon <a href="https://odin-lang.org/">Odin</a>. Odin seemed to have taken a similar route to my language, simplifying Jai. However, I still found
+design talks, and stumbled upon !(odin, Odin). Odin seemed to have taken a similar route to my language, simplifying Jai. However, I still found
 Odin to be a little too complex, and after developing the parser in C, I found that I really did not need much to program effectively. I therefore decided to throw everything
 I did not deem as necessary out the window, and strive to make the language as simple as possible. However simplifying the language too much could, strangely enough, lead to
 more complexity, as evident with machine language. I therefore adjusted my aim towards "simple but powerful", by reducing the moving parts of the language to a few

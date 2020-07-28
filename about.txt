@@ -1,7 +1,7 @@
 <h1>The Otus programming language</h1>
 The Otus programming language aims to be a *"simple but powerful"* alternative to C, 
-and takes heavy inspiration from languages such as <a href="https://odin-lang.org/">Odin</a>
- and <a href="https://www.youtube.com/playlist?list=PLmV5I2fxaiCKfxMBrNsU1kgKJXD3PkyxO">Jai</a>.
+and takes heavy inspiration from languages such as !(odin, Odin)
+ and !(jai, Jai).
 The current goal of the language is to be:
 
 <ul>

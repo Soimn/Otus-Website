@@ -49,7 +49,7 @@ and tradition than what makes the most sense".
 \n
 \n
 Another factor that should not be neglected is that people often say that syntax does not matter, semantics do. Even the creator
-of the programming language Jai has stated this numerous time in his <a href="https://www.youtube.com/playlist?list=PLmV5I2fxaiCKfxMBrNsU1kgKJXD3PkyxO">videos</a> 
+of the programming language Jai has stated this numerous time in his !(jai_vids, videos) 
 about the language. This may not be true, at least not always, but I believe syntax
 is as important as semantics. The reason? The syntax is what we use to convey the semantics, and if one does not fully understand the syntax, one cannot possibly understand
 the actual semantics. This is true both for programming languages and natural ones, and is the reason why "double speak" exists. An example of this would be answering the

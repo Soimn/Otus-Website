@@ -128,7 +128,7 @@ ParseMarkup(char* post_file_name, char* cursor, unsigned long space, FILE* outpu
                 putc(' ', output);
             }
             
-            if (space == 0) break;
+            if (space == 0 || *cursor == 0) break;
             else
             {
                 if (*cursor == '\\')
@@ -182,6 +182,64 @@ ParseMarkup(char* post_file_name, char* cursor, unsigned long space, FILE* outpu
                     is_underline = !is_underline;
                     fprintf(output, "<%su>", (is_underline ? "" : "/"));
                 }
+
+				else if (space > 1 && cursor[0] == '!' && cursor[1] == '(')
+				{
+					cursor += 2;
+					space  -= 2;
+
+					String subst = { .data = cursor, .size = 0 };
+					while (space != 0)
+					{
+							cursor += 1;
+							space  -= 1;
+
+							if (cursor[-1] != ',') subst.size += 1;
+							else break;
+					}
+
+					String disp_text = { .data = cursor, .size = 0 };
+					while (space != 0 && cursor[0] != ')')
+					{
+							cursor += 1;
+							space  -= 1;
+							disp_text.size += 1;
+					}
+
+					int did_fail = 0;
+					char* url    = 0;
+					if (space != 0)
+					{
+						cursor += 1;
+	
+
+						if (StringCStringCompare(subst, "jai_vids") || StringCStringCompare(subst, "jai"))
+						{
+						    url = "https://www.youtube.com/playlist?list=PLmV5I2fxaiCKfxMBrNsU1kgKJXD3PkyxO";
+						}
+
+						else if (StringCStringCompare(subst, "odin"))
+						{
+							url = "https://odin-lang.org/";
+						}
+
+						else did_fail = 1;
+					}
+
+					else did_fail = 1;
+
+					if (did_fail)
+					{
+						fprintf(output, "<b color=\"red\">FAILED TO SUBSTITUTE EXPRESSION<b>");
+					}
+
+					else
+					{
+						fprintf(output, "<a href=\"%s\">", url);
+						for (unsigned long long int i = 0; i < disp_text.size; ++i) putc(disp_text.data[i], output);
+						fprintf(output, "</a>");
+					}
+				}
                 
                 else if (space > 2 && cursor[0] == '`' && cursor[1] == '`' && cursor[2] == '`')
                 {
@@ -390,7 +448,8 @@ main(const int argc, const char** argv)
         fprintf(output, "<meta charset=\"utf-8\"/>\n");
         
         fprintf(output, "<meta name=\"description\" content=\"");
-        fprintf(output, "Documentation and useful information about the Otus systems programming language. ");fprintf(output, "The Otus language aims to be low level and \"simple but powerful\"\"/>\n");
+        fprintf(output, "Documentation and useful information about the Otus systems programming language. ");
+		fprintf(output, "The Otus language aims to be low level and \"simple but powerful\"\"/>\n");
         
         fprintf(output, "<meta name=\"author\" content=\"Simon Doksrød\"/>");
         fprintf(output, "<meta name=\"robots\" content=\"index,follow\">");
