@@ -3,7 +3,7 @@ Import Declarations
 
 Header files and dealing with cyclic imports has never really bothered me (except when I first learned C++ without knowing why header files existed in the first place).
 I was therefore quite puzzled when Jonathan Blow presented header files, along with C++'s arrow operator, as major issues with C++ in his video 
-<a href="https://youtu.be/TH9VCN6UkyQ">about a better programming language for games<a>. At that time, I saw the benefit of removing header files, but also, in my opinion,
+<a href="https://youtu.be/TH9VCN6UkyQ">about a better programming language for games</a>. At that time, I saw the benefit of removing header files, but also, in my opinion,
 a huge drawback. Include directives in C declare a dependency, but also serve as a guide as where to look for the implementation of anything in a given file. The 
 implementation could of course be hidden behind N nested imports (N being a significantly large number), but you at least know that for any given identifier, that is
 not part of the C language, you will always find the implementation further up the file, or in one of the imported header files. This promise is important for understanding

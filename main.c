@@ -102,8 +102,11 @@ IsKeyword(String string)
 }
 
 void
-ParseMarkup(char* post_file_name, char* cursor, unsigned long space, FILE* output)
+ParseMarkup(char* post_file_name, char* start, unsigned long length, FILE* output)
 {
+    char* cursor        = start;
+    unsigned long space = length;
+    
     do
     {
         while (space && (IsWhitespace(*cursor) || IsNewline(*cursor)))
@@ -174,7 +177,7 @@ ParseMarkup(char* post_file_name, char* cursor, unsigned long space, FILE* outpu
                     }
                 }
                 
-                else if (*cursor == '_')
+                else if (*cursor == '_' && (is_underline || (cursor == start || IsWhitespace(*(cursor - 1)))))
                 {
                     cursor += 1;
                     space  -= 1;
@@ -182,57 +185,62 @@ ParseMarkup(char* post_file_name, char* cursor, unsigned long space, FILE* outpu
                     is_underline = !is_underline;
                     fprintf(output, "<%su>", (is_underline ? "" : "/"));
                 }
-
+                
 				else if (space > 1 && cursor[0] == '!' && cursor[1] == '(')
 				{
 					cursor += 2;
 					space  -= 2;
-
+                    
 					String subst = { .data = cursor, .size = 0 };
 					while (space != 0)
 					{
-							cursor += 1;
-							space  -= 1;
-
-							if (cursor[-1] != ',') subst.size += 1;
-							else break;
+                        cursor += 1;
+                        space  -= 1;
+                        
+                        if (cursor[-1] != ',') subst.size += 1;
+                        else break;
 					}
-
+                    
 					String disp_text = { .data = cursor, .size = 0 };
 					while (space != 0 && cursor[0] != ')')
 					{
-							cursor += 1;
-							space  -= 1;
-							disp_text.size += 1;
+                        cursor += 1;
+                        space  -= 1;
+                        disp_text.size += 1;
 					}
-
+                    
 					int did_fail = 0;
 					char* url    = 0;
 					if (space != 0)
 					{
 						cursor += 1;
-	
-
+                        
+                        
 						if (StringCStringCompare(subst, "jai_vids") || StringCStringCompare(subst, "jai"))
 						{
 						    url = "https://www.youtube.com/playlist?list=PLmV5I2fxaiCKfxMBrNsU1kgKJXD3PkyxO";
 						}
-
+                        
 						else if (StringCStringCompare(subst, "odin"))
 						{
 							url = "https://odin-lang.org/";
 						}
-
+                        
+                        else if (StringCStringCompare(subst, "zig"))
+                        {
+                            url = "https://ziglang.org/";
+                        }
+                        
 						else did_fail = 1;
 					}
-
+                    
 					else did_fail = 1;
-
+                    
 					if (did_fail)
 					{
 						fprintf(output, "<b color=\"red\">FAILED TO SUBSTITUTE EXPRESSION<b>");
 					}
-
+                    
 					else
 					{
 						fprintf(output, "<a href=\"%s\">", url);
@@ -351,6 +359,14 @@ ParseMarkup(char* post_file_name, char* cursor, unsigned long space, FILE* outpu
                             fprintf(output, "</span>");
                         }
                         
+                        else if (*cursor == '<' || *cursor == '>')
+                        {
+                            fprintf(output, (*cursor == '<' ? "&lt;" : "&gt;"));
+                            
+                            cursor += 1;
+                            space  -= 1;
+                        }
+                        
                         else
                         {
                             putc(*cursor, output);
@@ -441,7 +457,7 @@ main(const int argc, const char** argv)
             }
         }
         
-        fprintf(output, "<!doctype html>\n<html>\n<head>\n");
+        fprintf(output, "<!doctype html>\n<html lang=\"en\">\n<head>\n");
         
         fprintf(output, "<title>Otus Programming Language</title>\n");
         fprintf(output, "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n");
@@ -449,7 +465,7 @@ main(const int argc, const char** argv)
         
         fprintf(output, "<meta name=\"description\" content=\"");
         fprintf(output, "Documentation and useful information about the Otus systems programming language. ");
-		fprintf(output, "The Otus language aims to be low level and \"simple but powerful\"\"/>\n");
+		fprintf(output, "The Otus language aims to be low level and &quot;simple but powerful&quot;\"/>\n");
         
         fprintf(output, "<meta name=\"author\" content=\"Simon Doksrød\"/>");
         fprintf(output, "<meta name=\"robots\" content=\"index,follow\">");
@@ -462,7 +478,7 @@ main(const int argc, const char** argv)
         
         fprintf(output, "<div id=\"page_container\">\n");
         fprintf(output, "<div id=\"header\">\n");
-        fprintf(output, "<img src=\"Otus.svg\" id=\"logo\"/>\n");
+        fprintf(output, "<img src=\"Otus.svg\" alt=\"Otus logo\" id=\"logo\"/>\n");
         fprintf(output, "<ul id=\"navbar\">\n");
         fprintf(output, "<li><a href=\"#about\"><b>About</b></a></li><li class=\"navbar_vl\">|</li>\n");
         fprintf(output, "<li><a href=\"#docs\"><b>Docs</b></a></li><li class=\"navbar_vl\">|</li>\n");
@@ -564,7 +580,7 @@ main(const int argc, const char** argv)
                         free(file_buffer);
                         
                         file_buffer_size = file_size;
-                        file_buffer      = malloc(file_buffer_size);
+                        file_buffer      = malloc(file_buffer_size + 1);
                     }
                     
                     HANDLE file_handle = CreateFileA(file_path, GENERIC_READ, FILE_SHARE_READ,
@@ -576,6 +592,8 @@ main(const int argc, const char** argv)
                     {
                         char* cursor       = file_buffer;
                         unsigned int space = file_size;
+                        
+                        cursor[space] = 0;
                         
                         do
                         {
@@ -692,7 +710,7 @@ main(const int argc, const char** argv)
                             fprintf(output, "<div class=\"log_title_minimized %s\" onclick=\"window.location.hash=\'#log@%s\'\"><a href=\"#log@%s\">%s</a></div>",
                                     log_id.data, log_id.data, log_id.data, title.data);
                             
-                            fprintf(output, "<div class=\"log_date_minimized %s\">%.4d/%.2d/%.2d</div>\n", 
+                            fprintf(output, "<div class=\"log_date_minimized %s\">%.4d/%.2d/%.2d</div>\n",
                                     log_id.data, 2000 + year, month, day);
                             
                             

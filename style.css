@@ -149,3 +149,12 @@ body
 	display: block;
 	margin-top: 1.0em;
 }
+
+.log_content_maximized h1
+{
+	font-size: 1.5em;
+	font-weight: normal;
+	margin-bottom: 0;
+	padding-bottom: 0;
+	border-bottom: 0.005em solid #80808033;
+}
