@@ -1,11 +1,7 @@
 <h1>The Otus programming language</h1>
-The Otus programming language aims to be a *"simple but powerful"* alternative to C, 
-and takes heavy inspiration from languages such as !(odin, Odin)
- and !(jai, Jai).
-The current goal of the language is to be:
-
+The Otus programming language aims to be a *"simple but powerful"* alternative to C, and takes heavy inspiration from languages such as !(odin, Odin) and !(jai, Jai). The current goal of the language is to be:
 <ul>
-	<li>**Clear and concise**, to remove unnecessary complexity</li>
-	<li>**Powerful**, to ease the development of large and complex software</li>
-	<li>**Lightweight**, to allow greater expressiveness without a loss of performance</li>
+    <li>**Clear and concise**, to ease readability</li>
+    <li>**Low friction**, to ease development of complex software</li>
+    <li>**Minimalistic and extensible**, to allow arbitrary levels of abstractions</li>
 </ul>

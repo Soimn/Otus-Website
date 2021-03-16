@@ -7,7 +7,7 @@ I was therefore quite puzzled when Jonathan Blow presented header files, along w
 a huge drawback. Include directives in C declare a dependency, but also serve as a guide as where to look for the implementation of anything in a given file. The 
 implementation could of course be hidden behind N nested imports (N being a significantly large number), but you at least know that for any given identifier, that is
 not part of the C language, you will always find the implementation further up the file, or in one of the imported header files. This promise is important for understanding
-foreign code and is broken by the use of multiple compilation units (non-unity build), and the removal of the requirement for every file to import it's dependencies. Now, 
+foreign code and is broken by the use of multiple translation units (non-unity build), and the removal of the requirement for every file to import it's dependencies. Now, 
 I'm not saying there is a problem with Jai because it does not have any header files (as it seems to only remove the forward declarations, not import dependencies), but it
 got me thinking.
 \n
@@ -31,15 +31,15 @@ or fully understood myself. However, I think the way Odin requires every file to
 the approach:
 <ul>
 	<li>being _mandatory_ in every file, it introduces additional unnecessary visual clutter</li>
-        <li>it might encourage enforcing stricter barriers, than optimal, between functionality in a codebase</li>
+    <li>it might encourage enforcing stricter barriers, than optimal, between functionality in a codebase</li>
 </ul>
 The first issue is a trivial one, but the second is, in my opinion, a great flaw with the language. Now, I'm not saying code should be an entangled spaghetti mess, but I am
 definitely advocating that overly modularizing code is akin to trying to build a fortress from breadcrumbs. It is not necessarily bad to separate part of a code base in
-different files, or even libraries, but it is truly damaging to the code base when those barriers become a part of the high level description and mental image. Packages in
+different files, or even libraries, but it is truly damaging to the code base when those barriers are encouraged and used haphazardly. Packages in
 Odin seem to only be used in distribution and import of several files as one. Allowing the programmer to import both files and directories, would in my opinion achieve a
 similar result, without the need for the concept of a package. Odin does however do a few things I like, namely "library collections", and import namespacing. In Odin you
 are able to prefix an import path with a label which declares which "library collection" that file is a part of. Adapting this to work with the file system instead could yield 
-a sort of prefix path label, where the label is a sort of "shorthand" for an absolute path. This is useful since it explicitly declares where the compiler should look for a file without needing to specify the full path, instead of using a list of search paths in C. Import namespacing is also a step in the more explicit direction, as giving each 
+a sort of prefix path label, where the label is a sort of "shorthand" for an absolute path. This is useful since it explicitly declares where the compiler should look for a file without needing to specify the full path, instead of using a list of search paths as in C. Import namespacing is also a step in the more explicit direction, as giving each 
 imported declaration a mandatory prefix could both fix name collisions and increase readability.
 \n
 \n

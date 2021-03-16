@@ -1,0 +1,191 @@
+27/07/20
+Metaprogramming
+
+Metaprogramming has been the driving force behind the language design decisions since the very beginning. Starting from C as a base, almost every feature added and removed was done to make metaprogramming either
+easier, cleaner or more powerful. Since metaprogramming has been such a central part of designing the language it was important to get it right. This would, however, prove difficult.
+\n
+\n
+PS: this article may seem somewhat nonsensical at some points, and this is due to the fact that I am still not familiar enough with metaprogramming, even after several months of work, to explain it as simple as the
+concept really is.
+
+<h1>Early Development</h1>
+When I first decided to create a compiler, I was actually working on a game engine, so I didn't want to waste a lot of work designing a language that I might never use. I therefore thought it would be best to stick
+with C as the base language, and then write a custom compiler with metaprogramming features. But after discovering how horrible C was to parse, and how much worse it would be if I were to add syntax for type 
+inference and multiple return values, I ended up deciding to create my own language.
+\n
+\n
+At first this language closely resembled C, but even though I removed a lot of craziness in the syntax, it was still an ugly parse.
+And after a phase of several complete syntax redesigns, I ended up with a syntax that landed somewhere in between !(jai, Jai) and !(odin, Odin). When I had settled on a syntax, I began work on the parser. At this
+stage I thought a working compiler would be right around the corner, and I couldn't be more wrong. As I wrote the parser and began work on semantic analysis and type checking, I started learning a lot more about 
+language design. This made me a lot more conscious about how syntax affects the perception of semantics, and how the semantics would influence the metaprogramming. This made me realise that my approach to designing
+the language had been all wrong. Instead of designing a syntax for C like semantics with metaprogramming as an afterthought, I should rather design the syntax, language semantics and metaprogramming facilities
+in unison. This may seem obvious, and it really is, but as primarily a game developer it took me a long time to realize this.
+\n
+\n
+The decision resulted in me scrapping the parser and working on designing the language for a few months. During this period, the goals of metaprogramming in the language changed quite often. At first the goal was to
+provide some simple way of modifying the AST in the source code, and would then change to the compiler being implemented as a library where an external program would be able to monitor and modify the compilation. 
+Using a somewhat bodged version of the hypothetico-deducitve method, and a lot of experimentation, I ended up with a base language that was somewhat complete, and a specification for how the metaprogramming should
+work, and where the complexity would lie. It was also around this time I seriously considered quitting. This was mostly because the task of creating the system that I had designed seemed immensely difficult, but as I had 
+already sunken probably a couple hundred hours into the design of this language I didn't want to stop and let all that work go to waste. 
+\n
+\n
+Thus the premise of this article: **a short summary of my attempt at tackling these 
+problems, and the solution I came up with.**
+
+<h1>Internal vs. External</h1>
+One of the first problems I encountered was purely a design problem. It did have a lot of impact on the inner workings of the compiler, but the implementation was not the problem, the usability and clarity was. The 
+problem had to do with whether most, or all, of the metaprogramming should be done within source, from an external program or a combination of the two. Internal metaprogramming, as I call it, is present in a lot of
+languages today, and is the ability to modify the AST, and other qualities of a program, from within the source code. External, on the other hand, is the ability to modify the program from a
+separate process. If flexibility is the end goal, it may seem like an obvious choice to support both. But, if an equally important goal is to keep the language sane and simple, the choice becomes a bit
+hairy. There are three main problems with both mixing, and choosing one or the other, namely: local reasoning, availability and evaluation order.
+
+<h2>Local Reasoning</h2>
+In essence, local reasoning is the ability to understand a piece of functionality from information that is "locally available". Meaning that the reader does not necessarily need to understand how an entire program
+works, in order to reason about a given fragment of the functionality. Enabling local reasoning is immensely important to maintain code readability, and any feature that detracts from this would severely damage the
+language. Ensuring that metaprogramming would not hinder local reasoning was therefore a very high priority. Now, what does this have to do with internal vs. external metaprogramming? You may have guessed this already,
+but something being "external" implies that it is further away from the "core", than something "internal". This would make it seem that internal metaprogramming would benefit local reasoning more than external.
+However, there is one important caveat. An internal metaprogram that is separated from the code it modifies by file, or even in the same file, but as a separate declaration, is almost indistinguishable from an
+external one, given the same toolset. To truly aid local reasoning, it should be possible to implement the metaprogram in the exact place that it modifies. Internal metaprogramming that enables this would therefore
+be most beneficial from a "local reasoning" standpoint.
+\n
+\n
+PS: this form of internal metaprogram that is implemented "inline", i.e. the same place it modifies, is present in the programming language !(jai, Jai) with the "body_text" directive. This compiler directive enables
+the programmer to write code that generates an AST that replaces the body of the surrounding procedure, or struct. There is also the "insert" directive, which allows the programmer to arbitrarily insert code snippets
+in place.
+
+<h2>Availability</h2>
+One of the problems with metaprogramming in most languages, is that normal functionality is often unavailable. Take for example utility procedures like max, min and clamp. If these procedures are implemented in the
+same program that a metaprogram is working on, they may be unavailable for use in the metaprogram. Now, there are many languages that do allow metaprograms to access this functionality, but they are often either
+interpreted or dependent on declaration order, which my language is most certainly not. There are however a few solutions to this problem. An external metaprogram can easily access the source code of the program it is
+manipulating. However, some of this functionality may depend on, or be slightly altered, by the metaprogram, which means that including the raw source code may result in unwanted behaviour, or down right fail to
+compile. As opposed to external metaprograms, Internal metaprograms are free to use any functionality that does not depend on the code they are modifying. This does however require a lot of dependency solving, and
+may require some nasty hacks, like searching for procedures that are supposed to modify the compilation of the entire program only be name, since type information may not be available at that time.
+\n
+\n
+
+<h2>Evaluation Order</h2>
+Now, the last of the major problems with deciding between internal and external metaprogramming: evaluation order. This simply boils down to the fact that it is easier to handle compilation in an arbitrary order when
+the functionality that is in charge of modification is not part of the equation. Meaning that external metaprograms are cleaner in this regard, since the compiler does not need to find (without type information)
+the metaprograms that modify the entire program.
+
+<h2>Internal and External</h2>
+If nothing else, you should now know that internal metaprograms seem to be better at enabling local reasoning, external are cleaner when it comes to evaluation order and both internal and external are a bit fuzzy with
+availability. In the end, what seems to be the best option is a mix between the two. You may now be screaming: "just take the good parts of both and combine them, you fool", and that is, in fact, what I too shouted
+when reading my notes. Internal metaprogramming, that is "in place" (i.e. beside the code it modifies), would be responsible for local transformations, while external would deal with program wide transformations. This
+enables local reasoning with local transformations, and eliminates problems with evaluation order. Availability is however still a problem. Internal metaprograms would not suffer from this, since they no longer operate
+program wide, but the problem with availability for external metaprograms is still present. One way of somewhat remedying this is to allow the external metaprogram to run compiled procedures that do not affect global
+state. Alternatively, it may be beneficial to allow the metaprogram to run the compiled bytecode in a sort of "sandbox", and allow it to conditionally commit the results to the programs data section. Anyway, I ended up
+choosing external metaprogramming for "coarse-grained" modification, and internal for "fine-grained" modification.
+
+<h1>Freedom</h1>
+A major problem with designing external metaprogramming API is user freedom. I don't see a point in supporting metaprogramming if you are only able to change a small part of the program in question. I have therefore strived to enable as much freedom as possible when designing the language and metaprogramming facilities. However, the problem with making a system more free, is that it simultaneously introduces a lot more points of failure. Not only this, but there are a lot of hacks used by compilers that are impossible to leverage when a user is able to change several parts of the compilation process.
+
+<h1>Miscellaneous Problems</h1>
+
+<h2>Metaprogram notes</h2>
+To enable selective exclusion from, or application of, program wide rules, there must be a way for the source code to communicate with the metaprogram. This can be done in several ways, but I have opted to use "metaprogram notes". These notes are a combination of an identifier and zero or more expressions as arguments. Currently they are represented in the syntax as an @ followed by an arbitrary identifier, and optionally, a list of expressions delimited by commas and surrounded by parentheses. While the definition of a note is clear, I have yet to decide where exaclty these metaprogramming notes can be left in the source code, whether they applied to any expression or statement, or if their use is restricted to declarations. A problem that illustrates the consequences of this decision is "@attribute a = b". Does the attribute apply to the assignment statement as a whole, or only the left hand operand? If attributes are not applicable to expressions, this becomes a non problem, however, this decision also reduces a lot of freedom, since it eliminates the ability to express something like "a = @CrashOnOverflow (b + c)". An easy solution to this problem is to introduce another symbol for notes, "#", and state that "@notes" apply only to statements, while "#notes" apply to expressions. The problem with this solution is that is simultaneously introduces more complexity in the syntax, and removes the option for compiler directives, since there are no more easily accessible symbols to represent these. I have therefore thought about moving all compiler direvtives to keywords, however this results in not only an uglier syntax, but also further restricts the set of legal identifiers.
+	After much thought I have concluded that keeping "#" dedicated to compiler directives, and make "@notes" apply to both statements and expressions, is the least horrible solution of the bunch. This does not only simplify the syntax and the corresponding AST nodes (which affects the complexity of external metaprogramming), but it also justifies some inconsistencies with the "precedence" of "@notes". This is useful because it allows the following transformation:
+```
+// The name of a field is often the first thing you want to know                      (1)
+// Secondly is the type of the field                                                  (2)
+// Finally is how this field differs from every other field of that type (e.g. const) (3)
+
+// By accepting that the "precedence" of "@notes" is wierd, the transformation
+// from 3 1 2
+Structure :: struct
+{
+	@SomeNote a: int,
+}
+
+// to 1 2 3
+Structure :: struct
+{
+	a: int @SomeNote,
+}
+
+// Could be justified, which results in a more natural way of describing, and reading
+// descriptions of, fields.
+```
+
+<h2>Breaking out from Structured Programming</h2>
+One of the primary goals of this languages is to be at least as low-level as C, while supporting the functionality to build arbitrarily high level abstractions on top of a few basic constructs. A major problem with achieving this goal is related to the concept of <a href="https://en.wikipedia.org/wiki/Structured_programming">structured programming</a>. C is mostly structured, but contains some unstructured constructs, such as "goto" and the "switch" statement. These constructs make it difficult to introduce new constructs, such as "defer" (defer execution of a statement until end of scope), without running into a lot of wierd edge cases. I have therefore opted to remove "goto", and the "switch" statement with jump labels, from the list of planned language constructs. Although this decision makes constructing the language a lot simpler, it also reduces a lot of freedom. There are several legitimate uses of "goto", which is either a pain, or damn right impossible, to leverage in a purely structured language. However, some of the most useful can be translated:
+```
+{
+	// A lot of code
+	did_succeed = SomeErrorProneProcedure();
+	if (!did_succeed) do goto cleanup;
+	// A lot of code
+	did_succeed = SomeOtherErrorProneProcedure();
+	if (!did_succeed) do goto cleanup;
+
+	cleanup:
+	// Cleaup code
+}
+
+// Can be implemented in a structured way with the "defer" statement and the ability to break out of any block
+
+{
+	defer {
+		// Cleanup code
+	}
+
+	// A lot of code
+	did_succeed = SomeErrorProneProcedure();
+	if (!did_succeed) do break;
+	// A lot of code
+	did_succeed = SomeOtherErrorProneProcedure();
+	if (!did_succeed) do break;
+}
+```
+Eventhough some of the most useful patterns are transferrable, the language is still inferior in feature set to C by lacking these unstructured constructs. I therefore began thinking of ways to expand the freedom without introducing unstructured elements. One of the most obvious ways of doing this is to allow procedures to reference the calling scope, as demonstrated in on of Jonathan Blow's <a href="https://youtu.be/QX46eLqq1ps?t=1456">videos</a> on his language !(jai, Jai). One could argue that this seems to violate the principles of structured programming, but it does not seem to introduce the the massive junkpile of problems that "goto" does, which is nice. To expand on this concept I began listing every related concept that did not seem to mess too much with the structuredness of the language. These are all operations on, or related to, scopes.
+<ul>
+	<li>insert symbol</li>
+	<li>remove symbol</li>
+	<li>access symbol</li>
+	<li>enter scope</li>
+	<li>leave scope</li>
+</ul>
+Removal of symbols is problematic, since it introduces a lot of problems with invalidating already compiled code (and introducing a complex dependency solver into the mix is a lot more constly than removing the ability to remove a symbol), and entering a scope is just normal control flow. This leaves insertion and accession of symbols, and leaving scopes. Symbols that do not exist cannot be accessed, therefore accession is limited to already existing scopes, which means it is always refering to a parent scope. Insertion can also be restricted in a similar fashion by disallowing insertion of symbols into procedures and structs, because these may exist in a context where the symbol does not. Insertion of symbols into blocks (scopes inside procedures) can similarily be disallowed as the symbols is either already accessible from that scope, or it does not exist in the same context. Be eliminating sub-scopes, structs and procedures, this only leaves packages. Leaving a scope is already present in normal control flow, but could be expanded on by allowing "breaking" from any block, not just loops, and not just breaking to the immediate parent, but any parent block.
+This results in the following:
+<ul>
+	<li>The ability to insert a symbol into a package</li>
+	<li>The ability to access the symbols of any\* parent scope</li>
+	<li>The ability to leave any set of parent blocks</li>
+</ul>
+\*may be restricted to any parent block of the caller
+
+<h2>Replacing the C preprocessor</h2>
+The C preprocessor is a powerful tool, some may say too powerful. But it does not change the fact that it is a useful part of the language/compiler. It does however introduce a bunch of problems with tooling, type safety and general readability. Replacing the preprocessor with something that does not have these flaws is therefore a reasonable goal. My proposal for replacing the preprocessor is "when" statements, and macros. When statements funciton as constant if statements, where the scope owned by the body of the statement "collapses" if the condition is true. Collapsing refers in this context to every symbol in a scope being transfered to the parent scope, and the removal of the collapsed scope. Macros are similar to when statements, where macros are procedures with no return value, where the body of the macro collapses when called. This enables the following code to be rewritten without using the preprocessor:
+```
+#if _WIN32
+#define X_MACRO(x) \
+	x(1);          \
+	x(2);          \
+	x(3);
+#else
+#define X_MACRO(x) \
+	x(1);          \
+	x(2);
+#endif
+
+////////////////////////
+
+when _WIN32
+	X_MACRO :: macro(x: macro(i: int))
+	{
+		x(1);
+		x(2);
+		x(3);
+	}
+}
+
+else
+{
+	X_MACRO :: macro(x: macro(i: int))
+	{
+		x(1);
+		x(2);
+	}
+}
+```
+Due to c-style sequence expressions being illegal in Otus, it is impossible to make a macro that defines memebers of structs and enums without implementing custom behaviour in a metaprogram.

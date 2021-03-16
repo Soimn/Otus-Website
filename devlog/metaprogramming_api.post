@@ -1,4 +1,0 @@
-27/07/20
-Metaprogramming
-
-One of the major design pillars of this language has always been metaprogramming. Most of the language is designed to make metaprogramming either easier, cleaner or more powerful. An example of this is the choice of keeping the language as simple as possible. A simple language is always nice, but my reasoning for keeping the language, somewhat overtly, simplistic is to allow for more complicated metaprogramming without piling up a mountain of complexity. Metaprogramming is already hard to deal with, mostly because cause and effect are far separated, but adding a complex language, like C++, on top of that is just begging for bugs. One solution to the problem of a large gap between cause and effect is choosing to allow the functionality manipulating a piece of code live next to it. Jonathan Blow's language, !(jai, Jai), implements this with the *body_text* and *modify* compiler directives, which takes code as arguments.  

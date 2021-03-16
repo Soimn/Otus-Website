@@ -29,20 +29,20 @@ The language started as an extension to C with added metaprogramming and altered
 multiple return values and improved templates, and functioned almost exactly like C. This introduced some problems, as I had at that time never written a parser (or any 
 other part of a compiler), and the many quirks of C syntax, including my own additions, seemed like too much. I therefore decided to alter the syntax a bit, changing it to
 look more like Jai. Along the way I also came up with some (I would say "interesting") ideas, and the syntax ended up being a hot mess. After several renditions due to
-aesthetics, holisticity and semantics, I arrived at a syntax similar to Jai, but different in a few subtle ways. 
+aesthetics and holisticity, I arrived at a syntax similar to Jai, but different in a few subtle ways. 
 \n
 \n
 I planned on using this language up until Jai released
-and then switch, but as the project grew I felt like I had arrived at a crossroads. One option would be to make a throwaway language and continue on engine development,
+and then switch, but as the project grew, I felt like I had arrived at a crossroads. One option would be to make a throwaway language and continue on engine development,
 another would be to pause the development of my existing projects and develop a proper language. This dilemma lead to a lot of frustration and hopelessness as I did not
 see myself being able to finish both the engine and the language in any reasonable time frame. However I did not like the idea of making a compiler for a throwaway
 language either. After working on a parser for the language I also found myself a bit repelled by the complexity of it. By extension I also found myself displeased with the
 complexity of Jai, as my language was supposed to be a simpler version of it (so that I could manage the development of it). At the same time I was watching a lot of language
 design talks, and stumbled upon !(odin, Odin). Odin seemed to have taken a similar route to my language, simplifying Jai. However, I still found
-Odin to be a little too complex, and after developing the parser in C, I found that I really did not need much to program effectively. I therefore decided to throw everything
+Odin to be a little too complex, and after developing the parser in C, I found that I really did not need much to code effectively. I therefore decided to throw everything
 I did not deem as necessary out the window, and strive to make the language as simple as possible. However simplifying the language too much could, strangely enough, lead to
 more complexity, as evident with machine language. I therefore adjusted my aim towards "simple but powerful", by reducing the moving parts of the language to a few
-powerful constructs that could be used directly or to build new abstractions.
+powerful constructs that could be used directly, or to build new abstractions.
 \n
 \n
 Lately I have been redesigning the language's syntax and semantics, as I found that a lot of the "unique" concepts I had introduced were not useful enough to outweigh the

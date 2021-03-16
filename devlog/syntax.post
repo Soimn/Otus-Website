@@ -12,22 +12,22 @@ the keyword *if*,  followed by an expression and then a statement. This is the d
 some inconsistency.
 ```
 // if expression statement allows this
-if a == b DoStuff();
+if a == b ``DoStuff();
 // but also this 
-if (a == b) DoStuff();
+if (a == b) ``DoStuff();
 ```
 Now that may not seem like a huge problem, although it does add some visual inconsistency across a code base if the two styles are mixed. The problem lies in how that
 definition of an *if* statement compares to a "for" loop. Take a C style *for* loop. What would be a reasonable definition of how this *for* loop should look?
-Maybe the keyword *for* followed by a variable declaration, then an expression as the condition, a statement as the increment step (since we are not crazy enough to allow 
-assignment to be an expression) and a statement to execute every loop. Something like this:
+Maybe the keyword *for* followed by a variable declaration, then an expression as the condition and a statement (since we are not crazy enough to allow 
+assignment to be an expression) to be run after every loop. Something like this:
 ```
 // for statement expression statement statement
-for int i = 0 i < 10 i += 1 DoStuff();
+for int i = 0 i < 10 i += 1 ``DoStuff();
 ```
 Well that looks like a mess. Lets add some parentheses and semicolons to separate the individual elements.
 ```
 // for (statement; expression; statement) statement
-for (int i = 0; i < 10; i += 1) DoStuff();
+for (int i = 0; i < 10; i += 1) ``DoStuff();
 ```
 What we just did will not help the parser at all, but it is clearly more readable. Now, stop for a moment and think about how we treated the *for* loop differently from
 the *if* statement. The *for* loop needed some additional "fluff" to be readable, whilst the *if* statement did not. This may seem more like stating trivia than a
@@ -38,21 +38,21 @@ That seems like more of a problem with how the syntax is taught than an inherit 
 should take into account and eliminate such misconceptions. Why is that important? Lets look at assembly.
 \n
 \n
-I don't know about you, but I have a hard time understanding what a program does when written in assembly. More often than not do I end up having to go line by line and rewrite
+I don't know about you, but I have a hard time understanding what a program does when written in assembly. More often than not do I end up having to go line by line and0 rewrite
 the assembly as "math with arrows". I usually have no problem with writing, but reading assembly is always a pain. Why is that? It may be because there are no operators,
 usually few variable names and a general lack of abstraction. Assembly is great, don't get me wrong, but it is horrible when it comes to quickly identifying what a piece of
 a program does and understanding how it works. Machine language is even worse, were you often have to resort to tables of opcodes to understand where the instructions are in a
 stream of 1's and 0's, what they do and how they affect each other. From what I've gathered, higher level languages were designed to mitigate this, **to make code more 
 readable and easier to understand**. Then, if that is the reason why higher level languages exist, why do we keep making languages that are hard to read or have quirks
-that prompt questions? The reason for this is the same for any language, even natural languages, and that is: "language design is hard and is often driven more by convention
-and tradition than what makes the most sense".
+that prompt questions? The reason for this is the same for any language, even natural languages, and that is because language design is hard and is often driven more by conventions
+than what makes the most sense.
 \n
 \n
 Another factor that should not be neglected is that people often say that syntax does not matter, semantics do. Even the creator
 of the programming language Jai has stated this numerous time in his !(jai_vids, videos) 
 about the language. This may not be true, at least not always, but I believe syntax
-is as important as semantics. The reason? The syntax is what we use to convey the semantics, and if one does not fully understand the syntax, one cannot possibly understand
-the actual semantics. This is true both for programming languages and natural ones, and is the reason why "double speak" exists. An example of this would be answering the
+is as important as semantics. Why? The syntax is what we use to convey the semantics, and if one does not fully understand the syntax, one cannot possibly understand
+the actual semantic information being conveyed. This is true both for programming languages and natural ones, and is the reason why "double speak" exists. An example of this would be answering the
 sentence "Have you eaten my lasagne", with "I ate my sandwich". This answer can both be the truth and a lie, depending on how one interprets it. The answer could be interpreted
 as "I ate my sandwich" with no additional information, but may be interpreted as "I did not eat your lasagne, only my sandwich" given the context. The answer could be remedied
 by adding an "only", but still goes to show how the same sentence can convey different meanings, if not crafted carefully. I therefore believe the best way to design a language
@@ -71,13 +71,14 @@ ultimately decided that the language **will only feature one looping construct**
 proposed, and was initially expressed like this:
 ```
 // for (statement; expression; statement) statement;
-for (i : int = 0; i < 10; i += 1) DoStuff(); // i : int = 0 is a variable declaration, equivalent to int i = 0 in C
+for (i : int = 0; i < 10; i += 1) ``DoStuff();
+// i : int = 0 is a variable declaration, equivalent to int i = 0 in C
 ```
 Now, it is somewhat stupid to name this loop *for*, but I didn't find another name that would be a better fit. There are however some nasty problems with this, aside from the
 name. The problems do not lie in the definition or syntax, per se, but rather the weird surprises this type of loop can create.
 ```
 // This is a do {} while (0) in C
-for (; true; break) DoStuff();
+for (; true; break) ``DoStuff();
 ```
 After discovering this, and some other quirks, I tried rewriting them with an additional restriction on the loop. An example of this would be the rewritten *do while*:
 ```
@@ -90,3 +91,7 @@ for (; true; )
 The intention of this loop is still not as clear as *do while*, and my decision of removing every loop construct except *for* may have been idiotic, but **I believe it might 
 lead to a syntax that more closely resembles what is actually going on**. Again, oversimplifying something may often lead to more complexity. But if no one dares to do 
 something that might be stupid, how will we ever evolve?
+\n
+\n
+EDIT:\n
+The *for* keyword did not really fit, so I changed the name of the loop construct to *while* and introduced a new control structure, *for*, which serves the purpose of a for each style loop.

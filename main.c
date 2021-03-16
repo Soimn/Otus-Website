@@ -81,22 +81,20 @@ IsKeyword(String string)
             StringCStringCompare(string, "int")      ||
             StringCStringCompare(string, "float")    ||
             StringCStringCompare(string, "bool")     ||
-            StringCStringCompare(string, "I8")       ||
-            StringCStringCompare(string, "I16")      ||
-            StringCStringCompare(string, "I32")      ||
-            StringCStringCompare(string, "I64")      ||
-            StringCStringCompare(string, "U8")       ||
-            StringCStringCompare(string, "U16")      ||
-            StringCStringCompare(string, "U32")      ||
-            StringCStringCompare(string, "U64")      ||
-            StringCStringCompare(string, "B8")       ||
-            StringCStringCompare(string, "B16")      ||
-            StringCStringCompare(string, "B32")      ||
-            StringCStringCompare(string, "B64")      ||
-            StringCStringCompare(string, "F32")      ||
-            StringCStringCompare(string, "F64")      ||
-            StringCStringCompare(string, "byte")     ||
-            StringCStringCompare(string, "word")     ||
+            StringCStringCompare(string, "s8")       ||
+            StringCStringCompare(string, "s16")      ||
+            StringCStringCompare(string, "s32")      ||
+            StringCStringCompare(string, "s64")      ||
+            StringCStringCompare(string, "u8")       ||
+            StringCStringCompare(string, "u16")      ||
+            StringCStringCompare(string, "u32")      ||
+            StringCStringCompare(string, "u64")      ||
+            StringCStringCompare(string, "b8")       ||
+            StringCStringCompare(string, "b16")      ||
+            StringCStringCompare(string, "b32")      ||
+            StringCStringCompare(string, "b64")      ||
+            StringCStringCompare(string, "f32")      ||
+            StringCStringCompare(string, "f64")      ||
             StringCStringCompare(string, "rawptr")   ||
             StringCStringCompare(string, "typeid"));
 }
@@ -272,9 +270,108 @@ ParseMarkup(char* post_file_name, char* start, unsigned long length, FILE* outpu
                             space  -= 1;
                         }
                         
-                        if (space > 2 && cursor[0] == '`' && cursor[1] == '`' && cursor[2] == '`') break;
+                        if (space > 2 && cursor[0] == '`')
+                        {
+                            if (cursor[1] == '`')
+                            {
+                                if (cursor[2] == '`') break;
+                                
+                                else if (cursor[2] == '*')
+                                {
+                                    cursor += 3;
+                                    space  -= 3;
+                                    
+                                    fprintf(output, "<span class=\"code_literal\">");
+                                    
+                                    while (space && (IsAlpha(*cursor) || IsDigit(*cursor) || *cursor == '_'))
+                                    {
+                                        putc(*cursor, output);
+                                        
+                                        cursor += 1;
+                                        space  -= 1;
+                                    }
+                                    
+                                    fprintf(output, "</span>");
+                                }
+                                
+                                else
+                                {
+                                    cursor += 2;
+                                    space  -= 2;
+                                    
+                                    fprintf(output, "<span class=\"code_function\">");
+                                    
+                                    while (space && (IsAlpha(*cursor) || IsDigit(*cursor) || *cursor == '_'))
+                                    {
+                                        putc(*cursor, output);
+                                        
+                                        cursor += 1;
+                                        space  -= 1;
+                                    }
+                                    
+                                    fprintf(output, "</span>");
+                                }
+                            }
+                            
+                            else
+                            {
+                                cursor += 1;
+                                space  -= 1;
+                                
+                                fprintf(output, "<span class=\"code_keyword\">");
+                                
+                                while (space && (IsAlpha(*cursor) || IsDigit(*cursor) || *cursor == '_'))
+                                {
+                                    putc(*cursor, output);
+                                    
+                                    cursor += 1;
+                                    space  -= 1;
+                                }
+                                
+                                fprintf(output, "</span>");
+                            }
+                        }
                         
-                        if (IsAlpha(*cursor))
+                        else if (*cursor == '"' || *cursor == '\'')
+                        {
+                            char sentinel = *cursor;
+                            
+                            fprintf(output, "<span class=\"code_literal\">");
+                            
+                            do {
+                                putc(*cursor, output);
+                                
+                                cursor += 1;
+                                space  -= 1;
+                            } while (space && *cursor != sentinel);
+                            
+                            if (space)
+                            {
+                                putc(*cursor, output);
+                                
+                                cursor += 1;
+                                space  -= 1;
+                            }
+                            
+                            fprintf(output, "</span>");
+                        }
+                        
+                        else if (IsDigit(*cursor))
+                        {
+                            fprintf(output, "<span class=\"code_literal\">");
+                            
+                            while (space && IsDigit(*cursor))
+                            {
+                                putc(*cursor, output);
+                                
+                                cursor += 1;
+                                space  -= 1;
+                            }
+                            
+                            fprintf(output, "</span>");
+                        }
+                        
+                        else if (IsAlpha(*cursor))
                         {
                             String identifier = {
                                 .data = cursor,
@@ -290,9 +387,16 @@ ParseMarkup(char* post_file_name, char* start, unsigned long length, FILE* outpu
                             }
                             
                             unsigned char is_keyword = IsKeyword(identifier);
+                            unsigned char is_boolean = (StringCStringCompare(identifier, "true") || StringCStringCompare(identifier, "false"));
+                            
                             if (is_keyword)
                             {
                                 fprintf(output, "<span class=\"code_keyword\">");
+                            }
+                            
+                            else if (is_boolean)
+                            {
+                                fprintf(output, "<span class=\"code_literal\">");
                             }
                             
                             for (unsigned int i = 0; i < identifier.size; ++i)
@@ -300,7 +404,7 @@ ParseMarkup(char* post_file_name, char* start, unsigned long length, FILE* outpu
                                 putc(identifier.data[i], output);
                             }
                             
-                            if (is_keyword)
+                            if (is_keyword || is_boolean)
                             {
                                 fprintf(output, "</span>");
                             }
@@ -428,7 +532,8 @@ main(const int argc, const char** argv)
                                              0, OPEN_EXISTING, 0, 0);
             
             about.size = GetFileSize(file_handle, 0);
-            about.data = malloc(about.size);
+            about.data = malloc(about.size + 1);
+            about.data[about.size] = 0;
             
             unsigned long bytes_read = 0;
             if (about.size == INVALID_FILE_SIZE                                ||
@@ -445,7 +550,8 @@ main(const int argc, const char** argv)
                                              0, OPEN_EXISTING, 0, 0);
             
             script.size = GetFileSize(file_handle, 0);
-            script.data = malloc(script.size);
+            script.data = malloc(script.size + 1);
+            script.data[script.size] = 0;
             
             unsigned long bytes_read = 0;
             if (script.size == 0                                                 ||
@@ -465,7 +571,7 @@ main(const int argc, const char** argv)
         
         fprintf(output, "<meta name=\"description\" content=\"");
         fprintf(output, "Documentation and useful information about the Otus systems programming language. ");
-		fprintf(output, "The Otus language aims to be low level and &quot;simple but powerful&quot;\"/>\n");
+        fprintf(output, "The Otus language aims to be low level and &quot;simple but powerful&quot;\"/>\n");
         
         fprintf(output, "<meta name=\"author\" content=\"Simon Doksrød\"/>");
         fprintf(output, "<meta name=\"robots\" content=\"index,follow\">");
@@ -517,7 +623,6 @@ main(const int argc, const char** argv)
         
         fprintf(output, "<div id=\"log_intro\">\n");
         fprintf(output, "This is a collection of articles in a log-esque format that try to describe the problems I have encountered while designing the language and compiler.");
-        fprintf(output, " The first post was written about half a year after the start of development, as to not hamstring the development by writing articles instead of code.");
         fprintf(output, "\n</div>\n");
         
         if (argc == 2)

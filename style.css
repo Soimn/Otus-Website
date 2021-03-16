@@ -79,10 +79,12 @@ body
 .code
 {
 	width: 98%;
-	background-color: #161616;
+	background-color: #212121; /*#161616;*/
 	display: block;
 	white-space: pre-wrap;
 	font-family: Consolas, arial;
+	tab-size: 4;
+	-moz-tab-size: 4;
 	text-align: left;
 	color: #A08563;
 	margin-top: 1.05em;
@@ -91,8 +93,10 @@ body
 	padding-left: 1.05em;
 }
 
-.code_keyword { color: #CD950C; }
-.code_comment { color: #7D7D7D; }
+.code_keyword  { color: #CD950C; }
+.code_function { color: #99513D; }
+.code_comment  { color: #7D7D7D; }
+.code_literal  { color: #6B8E23; }
 
 .log_title_minimized
 {
@@ -157,4 +161,12 @@ body
 	margin-bottom: 0;
 	padding-bottom: 0;
 	border-bottom: 0.005em solid #80808033;
+}
+
+.log_content_maximized h2
+{
+	font-size: 1.2em;
+	font-weight: normal;
+	margin-bottom: 0;
+	padding-bottom: 0;
 }
